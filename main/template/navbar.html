@@ -1,0 +1,9 @@
+<nav>
+    <div class="nav-wrapper">
+        <a href="/" class="brand-logo left">QUIZ</a>
+    <ul id="nav-mobile" class="right">
+        <li>Hello, {{ request.user.first_name }} {{ request.user.last_name }}</li>
+        <li><a href="/logout">Logout</a></li>
+    </ul>
+    </div>
+</nav>

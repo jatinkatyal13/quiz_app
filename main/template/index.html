@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<body>
+	{% include 'navbar.html' %}
+	<div class="container">
+		
+		<div class="row"></div>
+		<div class="row">
+			<div class="col s4">
+				<div class="collection">
+					{% for question in all_questions %}
+					<a class="collection-item" href="/?question={{question.id}}">
+						{{ question.id }}
+					</a>
+					{% endfor %}
+				</div>
+			</div>
+			<div class="col s2"></div>
+			<div class="col s6">
+				{% if invalid %}
+				<div class="card-panel red lighten-4">
+					Invalid submission
+				</div>
+				{% endif %}
+				<p>
+					{{ question }}
+				</p>
+				<form method="POST" action="">
+					{% csrf_token %}
+					{% for choice in choices %}
+					<div class="input-field">
+						<input name="choice" type="radio" id="choice{{choice.id}}" value="{{ choice.id }}"
+						{% if curr_selected_choice == choice.id %}
+							checked
+						{% endif %}
+						/>
+	      				<label for="choice{{choice.id}}">{{ choice }}</label>
+	  				</div>
+					{% endfor %}
+					<div class="input-field">
+						<button class="btn waves-effect waves-light" type="submit">
+							Submit
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</body>
+
+{% endblock %}
