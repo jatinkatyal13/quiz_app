@@ -18,8 +18,9 @@ def leaderboard(request):
 				res_dict[str(x.user)] += 1 if x.selected_choice.is_correct else 0
 			except:
 				res_dict[str(x.user)] = 1 if x.selected_choice.is_correct else 0
-		print(res_dict)
-		params = {}
+		params = {
+			'res_dict' : res_dict
+		}
 		return render(request, "leaderboard.html", params)
 	else:
 		raise Http404()

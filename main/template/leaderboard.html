@@ -10,7 +10,9 @@
 		</div>
 		<div class="row">
 			<div class="collection">
-				<div class="collection-item">Leader</div>
+				{% for user, score in res_dict.items %}
+					<div class="collection-item">{{user}} - {{score}}</div>
+				{% endfor %}
 			</div>
 		</div>
 	</div>
