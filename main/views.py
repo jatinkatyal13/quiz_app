@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Q
+from django.contrib.auth.models import User
 from urllib.parse import urlencode, quote_plus, unquote
 from .forms import LoginForm
 from .models import Question, QuestionResult, Choice
@@ -11,13 +12,11 @@ from .models import Question, QuestionResult, Choice
 
 def leaderboard(request):
 	if request.user.is_superuser:
-		res = QuestionResult.objects.all()
 		res_dict = {}
-		for x in res:
-			try:
-				res_dict[str(x.user)] += 1 if x.selected_choice.is_correct else 0
-			except:
-				res_dict[str(x.user)] = 1 if x.selected_choice.is_correct else 0
+		from django.db import connection
+		cur = connection.cursor()
+		for row in cur.execute("select user_id, sum(is_correct) from main_questionresult, main_choice where main_choice.id = main_questionresult.selected_choice_id group by user_id;"):
+			res_dict[str(User.objects.get(id = row[0]))] = row[1]
 		params = {
 			'res_dict' : res_dict
 		}
@@ -37,11 +36,14 @@ def index(request):
 	question = get_object_or_404(Question, id = question_id)
 	choices = question.choice_set.all()
 	all_questions = Question.objects.all()
+	attempted_questions = [ obj.question.id for obj in QuestionResult.objects.filter(user = request.user)]
 
 	invalid = False
+	submit = False
 	if request.method == "POST":
 		choice_id = int(request.POST['choice'])
 		if Choice.objects.get(id = choice_id) in choices:
+			submit = True
 			try:
 				prev_result = QuestionResult.objects.get(Q(user = request.user) & Q(question = question))
 				prev_result.delete()
@@ -65,6 +67,8 @@ def index(request):
 	print(curr_selected_choice)
 
 	params = {
+		'submit' : submit ,
+		'attempted_questions' : attempted_questions,
 		'curr_selected_choice' : curr_selected_choice,
 		'choices' : choices,
 		'all_questions' : all_questions,

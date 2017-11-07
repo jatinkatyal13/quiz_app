@@ -4,6 +4,13 @@
 
 <body>
 	{% include 'navbar.html' %}
+	<script type="text/javascript">
+		$(document).ready(function(){
+			{% if submit %}
+			Materialize.toast("Question Submitted", 1500);
+			{% endif %}
+		});
+	</script>
 	<div class="container">
 		
 		<div class="row"></div>
@@ -13,6 +20,9 @@
 					{% for question in all_questions %}
 					<a class="collection-item" href="/?question={{question.id}}">
 						{{ question.id }}
+						{% if question.id in attempted_questions %}
+							<span class="right">done</span>
+						{% endif %}
 					</a>
 					{% endfor %}
 				</div>
